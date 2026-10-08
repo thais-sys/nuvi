@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f1e9ff">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Nuvi">
+<title>Nuvi · respire com a gente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg1:#f1e9ff;--bg2:#ffe9f1;--bg3:#e3f6ee;--ink:#3b3358;--ink2:#6f668f;--card:rgba(255,255,255,.7);--line:rgba(255,255,255,.95);--acc:#8b6cf0;--acc2:#ff8fb8;--sh:rgba(120,90,200,.2);--spk:rgba(139,108,240,.4);color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#251e42;--bg2:#33224a;--bg3:#1c2b3b;--ink:#f3eeff;--ink2:#b9b0dc;--card:rgba(255,255,255,.09);--line:rgba(255,255,255,.16);--sh:rgba(0,0,0,.4);--spk:rgba(255,255,255,.7);color-scheme:dark}}
+:root[data-theme="dark"]{--bg1:#251e42;--bg2:#33224a;--bg3:#1c2b3b;--ink:#f3eeff;--ink2:#b9b0dc;--card:rgba(255,255,255,.09);--line:rgba(255,255,255,.16);--sh:rgba(0,0,0,.4);--spk:rgba(255,255,255,.7);color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{background:var(--bg1) linear-gradient(160deg,var(--bg1),var(--bg2) 55%,var(--bg3));color:var(--ink);font-family:"Fredoka",ui-rounded,"Nunito","Segoe UI",system-ui,sans-serif;overflow:hidden}
+button,input{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+#app{height:100%;max-width:480px;margin:0 auto;padding:10px 18px 12px;display:flex;flex-direction:column;position:relative;z-index:1}
+header{display:flex;align-items:center;justify-content:space-between;height:42px;flex:none}
+header b{font-size:21px;font-weight:600;letter-spacing:.3px}
+#back{border:0;background:var(--card);border-radius:50%;width:40px;height:40px;font-size:24px;line-height:1;box-shadow:0 4px 14px var(--sh)}
+#back.off{visibility:hidden}
+#pill{font-size:14px;background:var(--card);padding:8px 12px;border-radius:99px;box-shadow:0 4px 14px var(--sh);min-width:40px;text-align:center}
+#pill:empty{visibility:hidden}
+#stage{flex:none;height:clamp(160px,28vh,240px);transition:height .5s ease;cursor:pointer;margin-top:4px}
+[data-view=breathe] #stage{height:clamp(230px,40vh,350px)}
+[data-view=ground] #stage,[data-view=words] #stage{height:clamp(120px,17vh,160px)}
+.float{height:100%;animation:fl 4.5s ease-in-out infinite}
+@keyframes fl{50%{transform:translateY(-8px)}}
+#scale{height:100%;width:max-content;margin:0 auto;position:relative;isolation:isolate;transition:transform .6s ease-in-out}
+#scale::before{content:"";position:absolute;inset:-22%;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.75),rgba(207,192,255,.25) 50%,transparent 70%);z-index:-1}
+[data-theme="dark"] #scale::before{background:radial-gradient(circle,rgba(190,170,255,.3),transparent 68%)}
+#nuvi{height:100%;width:auto;display:block;transform-origin:50% 92%;overflow:visible}
+#nuvi.hop{animation:hop .55s}
+@keyframes hop{30%{transform:translateY(-14px) scale(.95,1.06)}62%{transform:scale(1.06,.94)}}
+#nuvi .eo{animation:blink 5s infinite;transform-box:fill-box;transform-origin:center}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
+#nuvi .ec,#nuvi .mo{display:none}
+#nuvi.calm .eo,#nuvi.blow .eo{display:none}
+#nuvi.calm .ec,#nuvi.blow .ec{display:block}
+#nuvi.blow .ms{display:none}#nuvi.blow .mo{display:block}
+#bubble{position:relative;flex:none;background:var(--card);border:1.5px solid var(--line);border-radius:22px;padding:12px 16px;margin:8px 4px 12px;font-size:16px;line-height:1.4;text-align:center;box-shadow:0 8px 24px var(--sh);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+#bubble::before{content:"";position:absolute;top:-8px;left:50%;width:14px;height:14px;background:var(--card);border-left:1.5px solid var(--line);border-top:1.5px solid var(--line);transform:translateX(-50%) rotate(45deg);border-radius:4px 0 0 0}
+main{flex:1;overflow-y:auto;overflow-x:hidden;padding:2px;scrollbar-width:none}
+main::-webkit-scrollbar{display:none}
+section{display:none}
+section.on{display:block;animation:in .35s ease}
+@keyframes in{from{opacity:0}}
+.chips{display:flex;gap:8px;margin-bottom:12px}
+.chip{flex:1;border:1.5px solid var(--line);background:var(--card);border-radius:18px;padding:10px 4px;font-size:14px;box-shadow:0 4px 14px var(--sh);display:flex;flex-direction:column;gap:2px;align-items:center}
+.chip i{font-style:normal;font-size:26px}
+.chip:active,.act:active{transform:scale(.96)}
+.act{width:100%;display:flex;align-items:center;gap:14px;border:1.5px solid var(--line);background:var(--card);border-radius:22px;padding:12px 14px;margin-bottom:10px;text-align:left;box-shadow:0 8px 22px var(--sh);transition:transform .15s,box-shadow .3s}
+.act.hi{box-shadow:0 0 0 3px var(--acc2),0 8px 22px var(--sh)}
+.ic{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;font-size:26px;flex:none;background:linear-gradient(135deg,#d9ccff,#ffd1e3)}
+.act b{display:block;font-weight:600;font-size:17px}
+.act small{color:var(--ink2);font-size:13.5px}
+.quote{margin:4px 0;padding:12px 16px;border-radius:20px;text-align:center;font-size:15px;color:var(--ink2);border:1.5px dashed var(--line);width:100%;background:none;line-height:1.4}
+#sos{display:block;margin-bottom:10px;padding:12px 14px;border-radius:18px;background:linear-gradient(135deg,#ffd6e4,#ffe9c9);color:#5a2a44;text-decoration:none;font-size:15px;text-align:center;line-height:1.4}
+#sos[hidden]{display:none}
+.mid{text-align:center}
+#bword{font-size:38px;font-weight:600;line-height:1.1;margin-top:4px}
+#bcount{font-size:22px;color:var(--ink2);height:30px}
+.dots{display:flex;justify-content:center;gap:8px;margin:8px 0}
+.dots span{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots span.on{background:var(--acc)}
+.btn{display:block;margin:14px auto 0;border:0;border-radius:99px;padding:14px 30px;font-weight:500;font-size:17px;color:#fff;background:linear-gradient(135deg,var(--acc),var(--acc2));box-shadow:0 8px 22px var(--sh)}
+.btn.ghost{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
+#gnum{font-size:76px;font-weight:600;line-height:1;background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+#gtxt{font-size:21px;line-height:1.3;margin:2px 8px}
+#gtxt b{font-weight:600;color:var(--acc)}
+#ghint{color:var(--ink2);font-size:15px;line-height:1.4;margin:8px 10px 4px}
+.row{display:flex;gap:8px}
+#win{flex:1;min-width:0;border:1.5px solid var(--line);background:var(--card);border-radius:18px;padding:12px 14px;font-size:15px}
+#wadd{border:0;border-radius:18px;padding:0 16px;background:var(--acc);color:#fff;font-weight:500}
+#wl{list-style:none;padding:0;margin:12px 0}
+#wl li{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:12px 14px;margin-bottom:8px;font-size:15px;line-height:1.4}
+#wl button{border:0;background:none;color:var(--ink2);font-size:16px;padding:6px;flex:none}
+footer{flex:none;text-align:center;font-size:12.5px;color:var(--ink2);padding-top:8px;line-height:1.5}
+footer a{color:var(--acc);font-weight:500;text-decoration:none}
+.sp{position:fixed;width:6px;height:6px;border-radius:50%;background:var(--spk);opacity:0;animation:tw 4.5s infinite;pointer-events:none;z-index:0}
+@keyframes tw{50%{opacity:1}}
+.r{display:flex;gap:8px;align-items:center}
+#snd{border:0;background:var(--card);border-radius:50%;width:40px;height:40px;font-size:18px;box-shadow:0 4px 14px var(--sh)}
+[data-view=play] #stage,[data-view=meet] #stage{height:clamp(110px,15vh,150px)}
+.gchip,.rc{flex:1;border:1.5px solid var(--line);background:var(--card);border-radius:18px;padding:10px 6px;font-size:13.5px;line-height:1.25;box-shadow:0 4px 14px var(--sh);display:flex;flex-direction:column;gap:2px;align-items:center}
+.gchip i,.rc i{font-style:normal;font-size:26px}
+.gchip.on{box-shadow:0 0 0 3px var(--acc)}
+#field{--h:min(46vh,340px);position:relative;height:var(--h);overflow:hidden;border-radius:26px;background:var(--card);border:1.5px solid var(--line);touch-action:manipulation;margin-bottom:8px}
+.bb{position:absolute;bottom:-100px;animation:rise linear forwards}
+.bb b{display:block;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 30% 28%,#fff,rgba(255,255,255,.25) 35%,rgba(180,160,255,.35));border:1.5px solid rgba(255,255,255,.8);box-shadow:inset 0 0 12px rgba(255,255,255,.6)}
+.bb.pop{pointer-events:none}
+.bb.pop b{transform:scale(1.6);opacity:0;transition:.25s}
+@keyframes rise{to{transform:translateY(calc(-1*var(--h) - 140px))}}
+.fl{position:absolute;font-size:34px;font-style:normal;transform:translate(-50%,-50%) scale(0);animation:gr .8s cubic-bezier(.3,1.6,.5,1) forwards;pointer-events:none}
+@keyframes gr{to{transform:translate(-50%,-50%) scale(1)}}
+#ptimer{font-size:20px;color:var(--ink2)}
+.mi{width:100%;border:1.5px solid var(--line);background:var(--card);border-radius:18px;padding:12px 14px;font-size:15px;margin-bottom:8px}
+.lbl{margin:12px 4px 8px;font-size:15px;color:var(--ink2);text-align:center}
+[data-view=chat] #stage{height:clamp(110px,15vh,150px)}
+#daily{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:12px 16px;margin-bottom:12px;font-size:15px;line-height:1.45;text-align:center;box-shadow:0 4px 14px var(--sh)}
+#daily small{display:block;margin-top:6px;color:var(--ink2);font-size:13px}
+.m{display:block;max-width:85%;padding:10px 14px;border-radius:18px 18px 18px 6px;background:var(--card);border:1.5px solid var(--line);margin:0 0 8px;font-size:15px;line-height:1.45;color:var(--ink);text-decoration:none}
+.m.me{margin-left:auto;border-radius:18px 18px 6px 18px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;border-color:transparent}
+.m.sosl{background:linear-gradient(135deg,#ffd6e4,#ffe9c9);color:#5a2a44;font-weight:500}
+#co{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 6px}
+.op{border:1.5px solid var(--line);background:var(--card);border-radius:99px;padding:10px 16px;font-size:15px;box-shadow:0 4px 14px var(--sh)}
+.rem{margin-top:10px}
+#rt{border:1.5px solid var(--line);background:var(--card);border-radius:18px;padding:10px 12px;font-size:15px}
+#rb{flex:1;border:1.5px solid var(--line);background:var(--card);border-radius:18px;font-size:14.5px;padding:10px}
+@media (prefers-reduced-motion:reduce){.float,.sp,#nuvi .eo,#nuvi.hop{animation:none}.sp{opacity:.5}}
+</style>
+</head>
+<body data-view="home">
+<div id="app">
+  <header>
+    <button id="back" class="off" data-go="home" aria-label="Voltar ao início">‹</button>
+    <b>Nuvi</b>
+    <span class="r"><button id="snd" aria-label="Som desligado">🔇</button><span id="pill" title="Ciclos de respiração hoje"></span></span>
+  </header>
+
+  <div id="stage"><div class="float"><div id="scale">
+    <svg id="nuvi" viewBox="0 0 200 200" role="img" aria-label="Nuvi, um bichinho de nuvem fofo">
+      <defs><radialGradient id="gb" cx=".35" cy=".28" r=".85"><stop offset="0" stop-color="#f6f0ff"/><stop offset=".55" stop-color="#cfc0ff"/><stop offset="1" stop-color="#a592f4"/></radialGradient></defs>
+      <ellipse cx="100" cy="186" rx="54" ry="8" fill="#6b4fc4" opacity=".18"/>
+      <path d="M100 42c0-12 2-20 9-28" stroke="#7fcf9c" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M109 14c8-9 21-5 23 4-8 5-19 4-23-4z" fill="#8fe0ad"/>
+      <path d="M105 22c-8-7-21-3-21 5 8 5 18 3 21-5z" fill="#7fcf9c"/>
+      <circle cx="58" cy="54" r="21" fill="url(#gb)"/><circle cx="142" cy="54" r="21" fill="url(#gb)"/>
+      <circle cx="58" cy="55" r="10" fill="#ffc2d9" opacity=".7"/><circle cx="142" cy="55" r="10" fill="#ffc2d9" opacity=".7"/>
+      <ellipse cx="31" cy="126" rx="13" ry="19" fill="url(#gb)" transform="rotate(22 31 126)"/>
+      <ellipse cx="169" cy="126" rx="13" ry="19" fill="url(#gb)" transform="rotate(-22 169 126)"/>
+      <ellipse cx="74" cy="178" rx="19" ry="10" fill="#a592f4"/><ellipse cx="126" cy="178" rx="19" ry="10" fill="#a592f4"/>
+      <path d="M100 42c42 0 70 28 70 68 0 40-28 70-70 70s-70-30-70-70c0-40 28-68 70-68z" fill="url(#gb)"/>
+      <ellipse cx="100" cy="146" rx="36" ry="27" fill="#fff" opacity=".35"/>
+      <ellipse cx="54" cy="114" rx="13" ry="8" fill="#ff9ec0" opacity=".7"/><ellipse cx="146" cy="114" rx="13" ry="8" fill="#ff9ec0" opacity=".7"/>
+      <g class="eo"><ellipse cx="76" cy="100" rx="8" ry="10.5" fill="#3b3358"/><ellipse cx="124" cy="100" rx="8" ry="10.5" fill="#3b3358"/><circle cx="79" cy="96" r="3.2" fill="#fff"/><circle cx="127" cy="96" r="3.2" fill="#fff"/></g>
+      <g class="ec" fill="none" stroke="#3b3358" stroke-width="4.5" stroke-linecap="round"><path d="M67 99q9 9 18 0"/><path d="M115 99q9 9 18 0"/></g>
+      <path class="ms" d="M91 116q9 10 18 0" fill="none" stroke="#3b3358" stroke-width="4" stroke-linecap="round"/>
+      <ellipse class="mo" cx="100" cy="120" rx="6" ry="7.5" fill="#3b3358"/>
+    </svg>
+  </div></div></div>
+
+  <div id="bubble" aria-live="polite"></div>
+
+  <main>
+    <section id="home">
+      <div id="daily"></div>
+      <div class="chips">
+        <button class="chip" data-m="ok"><i>😌</i>Bem</button>
+        <button class="chip" data-m="mid"><i>😟</i>Ansioso(a)</button>
+        <button class="chip" data-m="low"><i>😣</i>Muito mal</button>
+      </div>
+      <a id="sos" href="tel:188" hidden>Se estiver difícil demais, o CVV atende 24h, de graça: <b>ligue 188</b></a>
+      <button class="act" data-go="chat"><span class="ic">💬</span><span><b>Conversar com a Nuvi</b><small>Ela escuta e te guia, passo a passo</small></span></button>
+      <button class="act" id="act-b" data-go="breathe"><span class="ic">🌬️</span><span><b>Respirar com a Nuvi</b><small>5 ciclos, no seu ritmo</small></span></button>
+      <button class="act" data-go="ground"><span class="ic">🌱</span><span><b>Voltar pro agora</b><small>Técnica 5-4-3-2-1</small></span></button>
+      <button class="act" data-go="meet"><span class="ic">💼</span><span><b>Modo reunião</b><small>Antes e depois, sem chamar atenção</small></span></button>
+      <button class="act" data-go="play"><span class="ic">🫧</span><span><b>Jogos calmos</b><small>5 minutos pra desacelerar</small></span></button>
+      <button class="act" data-go="words"><span class="ic">💌</span><span><b>Minhas frases</b><small>O que você precisa ouvir</small></span></button>
+      <button class="quote" id="quote" aria-label="Trocar frase"></button>
+      <div class="row rem"><input type="time" id="rt" value="20:00" aria-label="Horário do lembrete"><button id="rb">⏰ Criar lembrete diário</button></div>
+    </section>
+
+    <section id="breathe" class="mid">
+      <div id="bword"></div><div id="bcount"></div>
+      <div class="dots" id="bdots"></div>
+      <button class="btn ghost" data-go="home">Voltar ao início</button>
+    </section>
+
+    <section id="ground" class="mid">
+      <div id="gnum"></div><div id="gtxt"></div><div id="ghint"></div>
+      <div class="dots" id="gdots"></div>
+      <button class="btn" id="gnext"></button>
+    </section>
+
+    <section id="words">
+      <div class="row"><input id="win" maxlength="160" placeholder="Escreva algo gentil pra você" aria-label="Nova frase"><button id="wadd">Guardar</button></div>
+      <ul id="wl"></ul>
+    </section>
+    <section id="chat"><div id="cl"></div><div id="co"></div></section>
+
+    <section id="play" class="mid">
+      <div class="chips"><button class="gchip" data-g="bub"><i>🫧</i>Bolhas</button><button class="gchip" data-g="gar"><i>🌸</i>Jardim</button></div>
+      <div id="field" aria-label="Área do jogo"></div>
+      <div id="ptimer"></div>
+      <button class="btn ghost" data-go="home">Voltar ao início</button>
+    </section>
+
+    <section id="meet">
+      <button class="act" id="mbr"><span class="ic">🌬️</span><span><b>Respirar em silêncio</b><small>Sem som, cerca de 1 minuto</small></span></button>
+      <input class="mi" id="m1" maxlength="140" placeholder="Minha primeira frase vai ser…" aria-label="Primeira frase">
+      <input class="mi" id="m2" maxlength="140" placeholder="Quero que levem disso…" aria-label="O que levar da reunião">
+      <div class="quote" id="mq"></div>
+      <p class="lbl">Depois da reunião: como foi de verdade?</p>
+      <div class="chips"><button class="rc" data-r="0"><i>😌</i>Melhor que eu temia</button><button class="rc" data-r="1"><i>🙂</i>Como eu temia</button><button class="rc" data-r="2"><i>😮‍💨</i>Mais difícil</button></div>
+    </section>
+  </main>
+
+  <footer>A Nuvi complementa a terapia, não substitui.<br>Precisa conversar? <a href="tel:188">CVV 188</a>, 24h</footer>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const ST={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const nuvi=$('#nuvi'),sc=$('#scale'),rnd=a=>a[Math.floor(Math.random()*a.length)];
+const face=f=>{nuvi.classList.remove('calm','blow');f&&nuvi.classList.add(f)};
+const hop=()=>{coo();nuvi.classList.remove('hop');void nuvi.offsetWidth;nuvi.classList.add('hop')};
+const say=t=>{const b=$('#bubble');b.textContent=t;b.animate([{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'none'}],{duration:350,easing:'ease-out'})};
+const hello=()=>{const h=new Date().getHours();return h<5?'Oi, coruja! Tá difícil dormir?':h<12?'Bom dia! ☀️':h<18?'Boa tarde! 🌤️':'Boa noite! 🌙'};
+const MOOD={ok:'Que bom! 💜 Que tal uma respirada pra guardar esse momento?',mid:'Tô aqui com você. Vamos respirar juntos? 🌬️',low:'Eu tô aqui com você. Um passo de cada vez. Respira comigo? 💜'};
+const POKE=['Hihi, cócegas! 💜','Eu tô aqui, viu?','Você é incrível, sabia?','Quer um abraço de nuvem? ☁️','Respira fundo comigo?'];
+const DEF=['Isso vai passar. Eu já superei dias difíceis antes.','Meu corpo está seguro agora.','Sentir ansiedade não é perigoso. É só desconfortável.'];
+const G=[[5,'coisas que você consegue <b>VER</b>','Olhe ao redor devagar. Vale escolher detalhes pequenos, como a cor de um objeto.'],[4,'coisas que você consegue <b>TOCAR</b>','Sinta a textura da roupa, do chão, do celular nas mãos.'],[3,'sons que você consegue <b>OUVIR</b>','Se quiser, feche os olhos. Que sons existem perto e longe?'],[2,'cheiros que você consegue <b>SENTIR</b>','Pode ser o ar, um perfume, um café. Ou lembre de um cheiro bom.'],[1,'coisa boa sobre você pra <b>LEMBRAR</b>','Pode ser pequena. Só precisa ser verdade.']];
+let run=0,gi=0;
+
+const today=()=>new Date().toDateString();
+const cyc=()=>{const c=ST.get('nuvi-c',{});return c.d===today()?c.n:0};
+const pill=()=>{const n=cyc();$('#pill').textContent=n?'💜 '+n:''};
+const addCyc=()=>{ST.set('nuvi-c',{d:today(),n:cyc()+1});pill()};
+
+function go(v){
+  run++;hush();stopPlay();quiet=false;sc.style.transitionDuration='.6s';sc.style.transform='scale(1)';face('');
+  document.body.dataset.view=v;
+  $$('section').forEach(s=>s.classList.toggle('on',s.id===v));
+  $('#back').classList.toggle('off',v==='home');
+  ({home:home,breathe:breathe,ground:ground,words:words,play:play,meet:meet,chat:chat})[v]();
+}
+function quote(){const l=ST.get('nuvi-w',DEF);$('#quote').textContent=l.length?'💌 '+rnd(l):'💌 Toque em “Minhas frases” e escreva algo gentil pra você.'}
+function home(){say(hello()+' Eu sou a Nuvi. Como você tá agora?');$('#sos').hidden=true;$('#act-b').classList.remove('hi');quote();daily()}
+
+async function breathe(){
+  const id=run,w=$('#bword'),c=$('#bcount'),wait=ms=>new Promise(r=>setTimeout(r,ms));
+  const P=[['Inspire',4,1.2,'calm'],['Segure',2,1.2,''],['Solte',6,.88,'blow']];
+  $('#bdots').innerHTML='<span></span>'.repeat(5);const d=$$('#bdots span');
+  w.textContent='Prepare-se';c.textContent='';
+  say('Siga o meu ritmo: inspire pelo nariz, solte pela boca 🌬️');
+  await wait(1200);
+  for(let n=0;n<5;n++){
+    for(const[t,s,k,f]of P){
+      if(id!==run)return;
+      w.textContent=t;face(f);breath(f,s);sc.style.transitionDuration=s+'s';sc.style.transform='scale('+k+')';
+      for(let i=s;i>0;i--){c.textContent=i;await wait(1000);if(id!==run)return}
+    }
+    d[n].classList.add('on');addCyc();
+  }
+  face('');sc.style.transitionDuration='1.2s';sc.style.transform='scale(1)';
+  w.textContent='Muito bem 💜';c.textContent='';
+  say('Cinco respirações completas! Como o corpo está agora?');
+}
+
+function ground(){gi=0;say('Vamos voltar pro agora, juntinhos. Sem pressa 🌱');gstep()}
+function gstep(){
+  const[n,t,h]=G[gi];
+  $('#gnum').textContent=n;$('#gtxt').innerHTML=n+' '+t;$('#ghint').textContent=h;
+  $('#gdots').innerHTML=G.map((_,i)=>'<span class="'+(i<=gi?'on':'')+'"></span>').join('');
+  $('#gnext').textContent=gi<4?'Próximo':'Concluir';
+}
+$('#gnext').onclick=()=>{
+  if(gi<4){gi++;gstep();hop()}
+  else{go('home');say('Você voltou pro agora. Tenho orgulho de você! 🌱');hop()}
+};
+
+function words(){say('Escreva o que você precisa ouvir nos dias difíceis 💌');render()}
+function render(){
+  const l=ST.get('nuvi-w',DEF),u=$('#wl');u.innerHTML='';
+  l.forEach((t,i)=>{
+    const li=document.createElement('li'),s=document.createElement('span'),b=document.createElement('button');
+    s.textContent=t;b.textContent='✕';b.setAttribute('aria-label','Apagar frase');
+    b.onclick=()=>{l.splice(i,1);ST.set('nuvi-w',l);render()};
+    li.append(s,b);u.append(li);
+  });
+}
+function add(){
+  const i=$('#win'),t=i.value.trim();if(!t)return;
+  const l=ST.get('nuvi-w',DEF);l.unshift(t.slice(0,160));ST.set('nuvi-w',l);
+  i.value='';render();hop();say('Guardei com carinho 💜');
+}
+$('#wadd').onclick=add;
+$('#win').onkeydown=e=>{if(e.key==='Enter')add()};
+
+/* som: desligado por padrão, tudo gerado no aparelho */
+let AC,osc,soundOn=ST.get('nuvi-s',true),quiet=false;
+const PENT=[261.6,293.7,329.6,392,440,523.3,587.3,659.3];
+const can=()=>{if(!soundOn||quiet)return null;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}};
+function note(f,d=.9,v=.12){const a=can();if(!a)return;const o=a.createOscillator(),g=a.createGain(),t=a.currentTime;o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.03);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(a.destination);o.start(t);o.stop(t+d+.05)}
+function hush(){try{osc&&osc.stop()}catch(e){}osc=null;purrOff()}
+function breath(f,s){hush();const a=can();if(!a||!f)return;const o=a.createOscillator(),g=a.createGain(),t=a.currentTime,up=f==='calm';o.frequency.setValueAtTime(up?196:294,t);o.frequency.linearRampToValueAtTime(up?294:196,t+s);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.09,t+.6);g.gain.setValueAtTime(.09,t+s-.6);g.gain.linearRampToValueAtTime(0,t+s);o.connect(g).connect(a.destination);o.start(t);o.stop(t+s+.1);osc=o}
+const sndUI=()=>{$('#snd').textContent=soundOn?'🔊':'🔇';$('#snd').setAttribute('aria-label',soundOn?'Som ligado':'Som desligado')};
+$('#snd').onclick=()=>{soundOn=!soundOn;ST.set('nuvi-s',soundOn);sndUI();if(soundOn)note(392,.8)};
+sndUI();
+
+/* carinho: toque = pipilo "pi-pi", segurar = ronronar */
+let purr=null,ph=0;
+function coo(){
+  const a=can();if(!a)return;const t=a.currentTime,r=.9+Math.random()*.25;
+  [[520,780,0],[640,980,.14]].forEach(([f1,f2,d])=>{
+    const o=a.createOscillator(),g=a.createGain();
+    o.frequency.setValueAtTime(f1*r,t+d);o.frequency.exponentialRampToValueAtTime(f2*r,t+d+.1);
+    g.gain.setValueAtTime(0,t+d);g.gain.linearRampToValueAtTime(.14,t+d+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d+.17);
+    o.connect(g).connect(a.destination);o.start(t+d);o.stop(t+d+.2);
+  });
+}
+function purrOn(){
+  const a=can();if(!a||purr)return;const t=a.currentTime;
+  const o=a.createOscillator(),f=a.createBiquadFilter(),g=a.createGain(),l=a.createOscillator(),lg=a.createGain();
+  o.type='sawtooth';o.frequency.value=82;f.type='lowpass';f.frequency.value=800;
+  l.frequency.value=24;lg.gain.value=.05;l.connect(lg).connect(g.gain);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.07,t+.3);
+  o.connect(f).connect(g).connect(a.destination);o.start();l.start();purr={o,l,g,a};
+}
+function purrOff(){
+  if(!purr)return;const{o,l,g,a}=purr,t=a.currentTime;purr=null;
+  try{g.gain.cancelScheduledValues(t);g.gain.setTargetAtTime(0,t,.08);o.stop(t+.4);l.stop(t+.4)}catch(e){}
+}
+const stg=$('#stage');
+stg.addEventListener('pointerdown',()=>{
+  clearTimeout(ph);
+  ph=setTimeout(()=>{if(document.body.dataset.view!=='breathe'&&can()){purrOn();face('calm')}},350);
+});
+['pointerup','pointerleave','pointercancel'].forEach(ev=>stg.addEventListener(ev,()=>{clearTimeout(ph);if(purr){purrOff();face('')}}));
+
+/* jogos calmos: 5 minutos */
+let gt=0,gm=0,left=0;
+function stopPlay(){clearInterval(gt);clearInterval(gm)}
+function tick(){$('#ptimer').textContent=Math.floor(left/60)+':'+String(left%60).padStart(2,'0')}
+function play(){say('Sem pressa. Toque e deixe a mente desacelerar 🫧');startGame('bub')}
+function startGame(g){
+  stopPlay();$$('.gchip').forEach(b=>b.classList.toggle('on',b.dataset.g===g));
+  const f=$('#field');f.innerHTML='';left=300;tick();
+  gt=setInterval(()=>{left--;tick();if(left<=0){stopPlay();say('5 minutos de calma 💜 Como você está agora?')}},1000);
+  if(g==='bub'){bub();gm=setInterval(bub,900)}
+  f.onpointerdown=g==='gar'?plant:null;
+}
+function bub(){
+  const f=$('#field'),b=document.createElement('i'),s=44+Math.random()*44;
+  b.className='bb';b.innerHTML='<b></b>';
+  b.style.cssText='width:'+s+'px;height:'+s+'px;left:'+Math.random()*Math.max(0,f.clientWidth-s)+'px;animation-duration:'+(7+Math.random()*5)+'s';
+  b.onpointerdown=()=>{b.classList.add('pop');note(rnd(PENT),.7,.1);setTimeout(()=>b.remove(),260)};
+  b.onanimationend=()=>b.remove();f.append(b);
+}
+function plant(e){
+  const f=$('#field'),r=f.getBoundingClientRect(),x=e.clientX-r.left,p=document.createElement('i');
+  p.className='fl';p.textContent=rnd(['🌸','🌼','🌷','🌻','🌱','🍄']);
+  p.style.left=x+'px';p.style.top=(e.clientY-r.top)+'px';f.append(p);
+  note(PENT[Math.min(7,Math.floor(x/r.width*8))],1.2,.1);
+}
+$$('.gchip').forEach(b=>b.onclick=()=>startGame(b.dataset.g));
+
+/* modo reunião */
+const RC=['Que bom! Guarde isso: você aguenta mais do que o medo diz 💜','Foi como esperava, e você passou por ela. Isso conta muito 💜','Foi difícil, e mesmo assim você enfrentou. Isso é coragem de verdade 💜'];
+function meet(){
+  say('Antes da reunião: respire, prepare a abertura e leia sua frase 💪');
+  $('#m1').value=ST.get('nuvi-m1','');$('#m2').value=ST.get('nuvi-m2','');
+  $('#mq').textContent='💌 '+rnd(ST.get('nuvi-w',DEF).concat('Eu me preparei, e isso basta por agora.'));
+}
+$('#m1').oninput=e=>ST.set('nuvi-m1',e.target.value);
+$('#m2').oninput=e=>ST.set('nuvi-m2',e.target.value);
+$('#mbr').onclick=()=>{go('breathe');quiet=true};
+$$('.rc').forEach(b=>b.onclick=()=>{say(RC[b.dataset.r]);hop()});
+
+/* mensagem do dia + sequência de dias */
+const DM=['Hoje, uma coisa de cada vez já é suficiente.','Você não precisa ter tudo resolvido pra merecer descanso.','Respirar devagar é um jeito de dizer ao corpo: tá seguro.','Sentir ansiedade não quer dizer que algo ruim vai acontecer.','Pequenos passos também te levam longe.','Você já passou por dias difíceis e chegou até aqui.','Tá tudo bem pausar. Pausa também é cuidado.','Seu valor não depende do quanto você produz hoje.','Pensamento não é fato. Dá pra observar e deixar passar.','Seja gentil com você como seria com um amigo.','Hoje, escolha uma coisa pequena que te faça bem.','Você pode errar e continuar sendo suficiente.','Cada respiração é um recomeço pequeno.','Não precisa sentir tudo de uma vez. Um momento por vez.'];
+function daily(){
+  const t=new Date().toDateString(),y=new Date(Date.now()-864e5).toDateString(),s=ST.get('nuvi-st',{});
+  if(s.d!==t){s.n=s.d===y?(s.n||0)+1:1;s.d=t;ST.set('nuvi-st',s)}
+  const i=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5)%DM.length;
+  $('#daily').innerHTML='☀️ '+DM[i]+'<small>🌱 '+s.n+(s.n>1?' dias seguidos':' dia')+' cuidando de você</small>';
+}
+
+/* conversa guiada */
+const E={Ansioso:'Ansiedade é o corpo ligando o alarme, mesmo quando não há perigo de verdade.',Cansado:'Cansaço é um recado: sua mente e seu corpo estão pedindo pausa.',Triste:'A tristeza merece espaço. Sentir não é fraqueza.',Irritado:'Irritação muitas vezes esconde cansaço ou sobrecarga. Faz sentido você estar assim.'};
+const B={Peito:'Peito apertado e coração acelerado são o alarme do corpo, e eles passam.',Barriga:'A barriga costuma reagir primeiro ao estresse. Soltar o ar bem devagar ajuda ela a relaxar.',Cabeça:'Tensão na cabeça é comum. Soltar os ombros e a mandíbula pode aliviar.',Mãos:'Suor e mãos geladas são o corpo se preparando pra agir. Dá pra acalmar.',lugar:'Tudo bem não saber onde sente. Reparar já é um passo.'};
+const pick=(o,t)=>o[Object.keys(o).find(k=>t.includes(k))]||'';
+function msg(t,me){const d=document.createElement('div');d.className='m'+(me?' me':'');d.textContent=t;$('#cl').append(d)}
+function ask(q,opts,fn){
+  if(q)msg(q);const o=$('#co');o.innerHTML='';
+  opts.forEach(t=>{const b=document.createElement('button');b.className='op';b.textContent=t;b.onclick=()=>{msg(t,1);o.innerHTML='';setTimeout(()=>fn(t),500)};o.append(b)});
+  o.scrollIntoView({block:'end',behavior:'smooth'});
+}
+function chat(){
+  say('Esse é o seu cantinho. Responda no seu tempo 💜');$('#cl').innerHTML='';$('#co').innerHTML='';
+  ask('Oi, que bom você ter vindo. Como você está se sentindo agora?',['😟 Ansioso(a)','😴 Cansado(a)','😢 Triste','😠 Irritado(a)','🌧️ Tá muito pesado'],e=>{
+    if(e.includes('pesado')){
+      msg('Que bom que você me contou. Isso pesa mesmo, e você não precisa carregar sozinho(a). Falar com uma pessoa agora pode ajudar muito: o CVV atende 24h, de graça.');
+      const a=document.createElement('a');a.className='m sosl';a.href='tel:188';a.textContent='📞 Ligar para o CVV: 188';$('#cl').append(a);
+      ask('',['🌬️ Respirar comigo','💬 Continuar conversando'],x=>x.includes('Respirar')?go('breathe'):chatBody(e));return;
+    }
+    chatBody(e);
+  });
+}
+function chatBody(e){
+  ask('Entendi. E no corpo, onde você sente isso?',['💓 Peito','🌀 Barriga','🤕 Cabeça','🖐️ Mãos e suor','🤷 Em lugar nenhum'],b=>{
+    msg((pick(E,e)+' '+pick(B,b)).trim());
+    setTimeout(()=>ask('O que você acha que ajudaria agora?',['🌬️ Respirar','🌱 Voltar pro agora','🫧 Jogar um pouco','🤍 Só companhia'],h=>{
+      const m={Respirar:'breathe',Voltar:'ground',Jogar:'play'},k=Object.keys(m).find(x=>h.includes(x));
+      if(k){msg('Boa escolha. Vamos juntos?');setTimeout(()=>go(m[k]),900)}
+      else{msg('Então fico aqui do ladinho, sem pressa e sem cobrança. Quando quiser, é só voltar.');ask('',['Voltar ao início'],()=>go('home'))}
+    }),900);
+  });
+}
+
+/* lembrete diário: gera um arquivo de calendário (.ics) com repetição todo dia */
+$('#rb').onclick=()=>{
+  const v=$('#rt').value;if(!v)return;
+  const [h,m]=v.split(':'),d=new Date(),p=n=>String(n).padStart(2,'0'),ds=d.getFullYear()+p(d.getMonth()+1)+p(d.getDate());
+  const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Nuvi//PT','BEGIN:VEVENT','UID:nuvi-lembrete-diario@nuvi','DTSTAMP:'+ds+'T000000','DTSTART:'+ds+'T'+h+m+'00','DURATION:PT5M','RRULE:FREQ=DAILY','SUMMARY:☁️ Hora de respirar com a Nuvi','DESCRIPTION:Um minutinho pra você. Abra a Nuvi e respire.','BEGIN:VALARM','TRIGGER:PT0S','ACTION:DISPLAY','DESCRIPTION:Hora de respirar com a Nuvi','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));a.download='lembrete-nuvi.ics';a.click();
+  say('Abra o arquivo e adicione ao calendário. Todo dia, nesse horário, você recebe o aviso 💜');
+};
+
+$$('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+$$('.chip').forEach(c=>c.onclick=()=>{
+  const m=c.dataset.m;say(MOOD[m]);hop();
+  $('#sos').hidden=m!=='low';$('#act-b').classList.toggle('hi',m!=='ok');
+});
+$('#quote').onclick=quote;
+$('#stage').onclick=()=>{hop();const v=document.body.dataset.view;if(v==='home'||v==='words')say(rnd(POKE))};
+
+for(let i=0;i<16;i++){const s=document.createElement('i');s.className='sp';s.style.cssText='left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;animation-delay:'+Math.random()*4+'s';document.body.append(s)}
+pill();go('home');
+if('serviceWorker' in navigator)addEventListener('load',()=>{try{navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}});
+</script>
+</body>
+</html>
