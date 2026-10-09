@@ -18,6 +18,9 @@
 :root[data-theme="dark"]{--bg1:#251e42;--bg2:#33224a;--bg3:#1c2b3b;--ink:#f3eeff;--ink2:#b9b0dc;--card:rgba(255,255,255,.09);--line:rgba(255,255,255,.16);--sh:rgba(0,0,0,.4);--spk:rgba(255,255,255,.7);color-scheme:dark}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input{-webkit-user-select:text;user-select:text}
+#stage{touch-action:none}
 html,body{height:100%;margin:0}
 body{background:var(--bg1) linear-gradient(160deg,var(--bg1),var(--bg2) 55%,var(--bg3));color:var(--ink);font-family:"Fredoka",ui-rounded,"Nunito","Segoe UI",system-ui,sans-serif;overflow:hidden}
 button,input{font:inherit;color:inherit}
@@ -321,6 +324,7 @@ function purrOff(){
   try{g.gain.cancelScheduledValues(t);g.gain.setTargetAtTime(0,t,.08);o.stop(t+.4);l.stop(t+.4)}catch(e){}
 }
 const stg=$('#stage');
+stg.addEventListener('contextmenu',e=>e.preventDefault());
 stg.addEventListener('pointerdown',()=>{
   clearTimeout(ph);
   ph=setTimeout(()=>{if(document.body.dataset.view!=='breathe'&&can()){purrOn();face('calm')}},350);
