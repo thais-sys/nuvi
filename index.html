@@ -325,6 +325,9 @@ function purrOff(){
 }
 const stg=$('#stage');
 stg.addEventListener('contextmenu',e=>e.preventDefault());
+const inInput=e=>e.target.closest&&e.target.closest('input');
+document.addEventListener('selectstart',e=>{if(!inInput(e))e.preventDefault()});
+document.addEventListener('contextmenu',e=>{if(!inInput(e))e.preventDefault()});
 stg.addEventListener('pointerdown',()=>{
   clearTimeout(ph);
   ph=setTimeout(()=>{if(document.body.dataset.view!=='breathe'&&can()){purrOn();face('calm')}},350);

@@ -1,6 +1,6 @@
 // Service worker da Nuvi: deixa o app abrir offline.
 // Ao publicar uma versão nova, troque o número em V para forçar a atualização.
-const V = 'nuvi-v2';
+const V = 'nuvi-v3';
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
